@@ -9,7 +9,6 @@ import {
   CountryCode,
   Products,
 } from "npm:plaid";
-import "jsr:@std/dotenv/load";
 import * as zip from "jsr:@zip-js/zip-js";
 import { dirname, join } from "jsr:@std/path";
 import { fromFileUrl } from "jsr:@std/path/from-file-url";
@@ -44,12 +43,21 @@ app.use(cors());
 initDb();
 // TODO don't forget to close the db later
 
-const PLAID_CLIENT_ID = Deno.env.get("PLAID_CLIENT_ID");
-const PLAID_SECRET = Deno.env.get("PLAID_SECRET");
-const PLAID_ENV = Deno.env.get("PLAID_ENV");
-const PLAID_COUNTRY_CODES = (Deno.env
-  .get("PLAID_COUNTRY_CODES")
-  ?.split(",") || ["US", "CA"]) as CountryCode[];
+console.log("Please enter your Plaid credentials:");
+
+const PLAID_CLIENT_ID = prompt("PLAID_CLIENT_ID:")?.trim();
+const PLAID_SECRET = prompt("PLAID_SECRET:")?.trim();
+const PLAID_ENV = prompt("PLAID_ENV (sandbox/production):")?.trim();
+const PLAID_COUNTRY_CODES_INPUT = prompt("PLAID_COUNTRY_CODES (comma-separated, default: US,CA):")?.trim();
+
+if (!PLAID_CLIENT_ID || !PLAID_SECRET || !PLAID_ENV) {
+  console.error("Error: PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_ENV are required.");
+  Deno.exit(1);
+}
+
+const PLAID_COUNTRY_CODES = (PLAID_COUNTRY_CODES_INPUT
+  ? PLAID_COUNTRY_CODES_INPUT.split(",").map(c => c.trim())
+  : ["US", "CA"]) as CountryCode[];
 const PLAID_PRODUCTS = ["transactions"] as Products[];
 
 const configuration = new Configuration({

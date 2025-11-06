@@ -30,9 +30,15 @@ Each added transaction contains up to 42 data fields, reliably including
    deno run start
    ```
 
-2. Point your browser to [http://localhost:3002](http://localhost:3002).
-3. Login and download your latest transactions with one click.
-4. Stop the server (close the terminal window or use the key command for your system).
+2. When prompted, enter your Plaid configuration/credentials:
+   - PLAID_CLIENT_ID
+   - PLAID_SECRET
+   - PLAID_ENV (sandbox or production)
+   - PLAID_COUNTRY_CODES (comma-separated, e.g., US,CA)
+
+3. Point your browser to [http://localhost:3002](http://localhost:3002).
+4. Login and download your latest transactions with one click.
+5. Stop the server (close the terminal window or use the key command for your system).
 
 ## Workflow Tips
 
@@ -55,19 +61,9 @@ Finfetch is powered by Plaid, a service that connects with banks to retrieve you
    curl -fsSL https://deno.land/install.sh | sh
    ```
 
-1. Create a file named `.env` within the `backend` directory of Finfetch, and add the following:
+1. Find your API keys in the [Plaid Dashboard](https://dashboard.plaid.com/developers/keys) under Developer > Keys and keep them handy (e.g., in your password manager). You'll need:
 
-   ```text
-   PLAID_CLIENT_ID=
-   PLAID_ENV=
-   PLAID_SECRET=
-   PLAID_COUNTRY_CODES=
-   ```
-
-1. Find your API keys in the [Plaid Dashboard](https://dashboard.plaid.com/developers/keys) under Developer > Keys.
-1. In the `.env` file, add the following:
-
-| Variable              | Value(s)                                                                                                                                                                  |
+| Credential            | Description                                                                                                                                                               |
 | --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `PLAID_CLIENT_ID`     | Client ID listed in your Plaid dashboard                                                                                                                                  |
 | `PLAID_ENV`           | `sandbox` for test data or `production` for real data                                                                                                                     |
@@ -112,7 +108,7 @@ To protect your data, don't separate the client and server without changing secu
 
 To run in development mode you'll need 1) Node/NPM installed, and 2) to make the following changes:
 
-1. Within `backend/.env`, change `PLAID_ENV` to `sandbox` and replace the `PLAID_SECRET` with your sandbox secret from your Plaid dashboard.
+1. When starting the server, you'll be prompted for credentials. Use `PLAID_ENV=sandbox` and your sandbox secret from your Plaid dashboard.
 1. Within `backend/main.ts` uncomment the line `app.use(cors())`. This will allow your frontend and backend to run on different ports and still communicate (not recommended in production mode for security reasons).
 1. Start the backend server:
 
