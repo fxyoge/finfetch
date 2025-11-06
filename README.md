@@ -52,32 +52,34 @@ Each added transaction contains up to 42 data fields, reliably including
 Finfetch is powered by Plaid, a service that connects with banks to retrieve your data. You'll need your own Plaid developer account to use it. **Please note that use of Plaid's API for real-world data requires payment after a limited number of free uses.** See below for pricing.
 
 1. Follow the flow on [Plaid's Signup page](https://dashboard.plaid.com/signup) to make an account as a developer. You'll need to give them some information about your app and how you plan to use the API.
-1. Within the Plaid dashboard, apply for production access. This will take a few days, but you can use Finfetch in Sandbox mode in the meantime.
-1. [Set the use case](https://dashboard.plaid.com/link/data-transparency-v5) within the Plaid dashboard under Link > Link Customization. The default values are fine.
-1. Clone or download this repo onto your computer.
-1. If you don't have Deno installed, download and install it by running
+2. Within the Plaid dashboard, apply for production access. This will take a few days, but you can use Finfetch in Sandbox mode in the meantime.
+3. [Set the use case](https://dashboard.plaid.com/link/data-transparency-v5) within the Plaid dashboard under Link > Link Customization. The default values are fine.
+4. Clone or download this repo onto your computer.
+5. If you don't have Deno installed, download and install it by running
 
    ```bash
    curl -fsSL https://deno.land/install.sh | sh
    ```
 
-1. Find your API keys in the [Plaid Dashboard](https://dashboard.plaid.com/developers/keys) under Developer > Keys and keep them handy (e.g., in your password manager). You'll need:
+6. Find your API keys in the [Plaid Dashboard](https://dashboard.plaid.com/developers/keys) under Developer > Keys and keep them handy (e.g., in your password manager). You'll need:
 
-| Credential            | Description                                                                                                                                                               |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `PLAID_CLIENT_ID`     | Client ID listed in your Plaid dashboard                                                                                                                                  |
-| `PLAID_ENV`           | `sandbox` for test data or `production` for real data                                                                                                                     |
-| `PLAID_SECRET`        | The secret listed in your Plaid dashboard. Be sure to use the one that corresponds to your environment (sandbox or production)                                            |
-| `PLAID_COUNTRY_CODES` | Comma separated list of countries in which your banks appear. See [this list](https://plaid.com/docs/api/link/#link-token-create-request-country-codes) Example: `US,CA`. |
+| Credential            | Description                                                                                                                                                              |
+|-----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `PLAID_CLIENT_ID`     | Client ID listed in your Plaid dashboard                                                                                                                                 |
+| `PLAID_ENV`           | `sandbox` for test data or `production` for real data (default: production)                                                                                              |
+| `PLAID_SECRET`        | The secret listed in your Plaid dashboard. Be sure to use the one that corresponds to your environment (sandbox or production)                                           |
+| `PLAID_COUNTRY_CODES` | Comma separated list of countries in which your banks appear. See [this list](https://plaid.com/docs/api/link/#link-token-create-request-country-codes) (default: US,CA) |
 
-9. Start the Finfetch server by running
+7. Start the Finfetch server by running
 
    ```bash
    cd backend
    deno run start
    ```
 
-10. Open a browser and navigate to [http://localhost:3002/]().
+The database is stored at `~/.local/share/finfetch/db.db` when using production mode, or `./db.db` when using sandbox mode.
+
+8. Open a browser and navigate to [http://localhost:3002/]().
 
 Within the app, you can now click "Start from Scratch" and follow the prompts to create a password, add your bank accounts, and download your data (if you've been approved for production).
 
@@ -91,7 +93,7 @@ While Finfetch is free and open source, data is provided through Plaid's API whi
 
 Finfetch keeps a small database on your machine with only enough information to 1) authenticate a single user, 2) display your bank names and account "masks" (last four digits of account numbers), 3) request transaction data from Plaid. No transaction data is kept within this database--that lives in the CSVs that you download.
 
-To prevent an attacker with access to your hard drive from gaining API privileges to your accounts, your Plaid access keys are stored in an encrypted form. If you forget your password you can delete the file `db.db` in the `backend` directory, but you'll need to contact Plaid's support if you want to remove these accounts from your billing.
+To prevent an attacker with access to your hard drive from gaining API privileges to your accounts, your Plaid access tokens (per-bank credentials) are stored in an encrypted form. If you forget your password you can delete the database file, but you'll need to contact Plaid's support if you want to remove these accounts from your billing.
 
 Since Finfetch runs a local server that is only accessible to your machine, others on your network will not be able to access your running process.
 
@@ -109,15 +111,15 @@ To protect your data, don't separate the client and server without changing secu
 To run in development mode you'll need 1) Node/NPM installed, and 2) to make the following changes:
 
 1. When starting the server, you'll be prompted for credentials. Use `PLAID_ENV=sandbox` and your sandbox secret from your Plaid dashboard.
-1. Within `backend/main.ts` uncomment the line `app.use(cors())`. This will allow your frontend and backend to run on different ports and still communicate (not recommended in production mode for security reasons).
-1. Start the backend server:
+2. Within `backend/main.ts` uncomment the line `app.use(cors())`. This will allow your frontend and backend to run on different ports and still communicate (not recommended in production mode for security reasons).
+3. Start the backend server:
 
    ```bash
    cd backend
    deno run dev
    ```
 
-1. Install Node modules and start the frontend server:
+4. Install Node modules and start the frontend server:
 
    ```bash
    cd frontend
@@ -125,5 +127,5 @@ To run in development mode you'll need 1) Node/NPM installed, and 2) to make the
    npm run dev
    ```
 
-1. This will run the development server in Vite, which will tell you which port it's running on.
-1. When you need to test with the backend, run `npm build` and switch to the backend server.
+5. This will run the development server in Vite, which will tell you which port it's running on.
+6. When you need to test with the backend, run `npm build` and switch to the backend server.

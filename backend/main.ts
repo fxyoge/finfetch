@@ -40,25 +40,30 @@ app.use(bodyParser.json());
 // For security reasons, only use CORS during development. It's not needed when serving files from the dist folder.
 app.use(cors());
 
-initDb();
-// TODO don't forget to close the db later
-
 console.log("Please enter your Plaid credentials:");
 
 const PLAID_CLIENT_ID = prompt("PLAID_CLIENT_ID:")?.trim();
 const PLAID_SECRET = prompt("PLAID_SECRET:")?.trim();
-const PLAID_ENV = prompt("PLAID_ENV (sandbox/production):")?.trim();
+const PLAID_ENV_INPUT = prompt("PLAID_ENV (sandbox/production, default: production):")?.trim();
 const PLAID_COUNTRY_CODES_INPUT = prompt("PLAID_COUNTRY_CODES (comma-separated, default: US,CA):")?.trim();
 
-if (!PLAID_CLIENT_ID || !PLAID_SECRET || !PLAID_ENV) {
-  console.error("Error: PLAID_CLIENT_ID, PLAID_SECRET, and PLAID_ENV are required.");
+if (!PLAID_CLIENT_ID || !PLAID_SECRET) {
+  console.error("Error: PLAID_CLIENT_ID and PLAID_SECRET are required.");
   Deno.exit(1);
 }
 
+const PLAID_ENV = PLAID_ENV_INPUT || "production";
 const PLAID_COUNTRY_CODES = (PLAID_COUNTRY_CODES_INPUT
   ? PLAID_COUNTRY_CODES_INPUT.split(",").map(c => c.trim())
   : ["US", "CA"]) as CountryCode[];
 const PLAID_PRODUCTS = ["transactions"] as Products[];
+
+const dbPath = PLAID_ENV === "production"
+  ? join(Deno.env.get("HOME"), ".local", "share", "finfetch", "db.db")
+  : join(__dirname, "db.db");
+
+initDb(dbPath);
+// TODO don't forget to close the db later
 
 const configuration = new Configuration({
   basePath: PlaidEnvironments[PLAID_ENV!],

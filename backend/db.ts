@@ -5,14 +5,25 @@ import { Account, ServerItem } from "../sharedTypes.ts";
 import { camelToSnake } from "./utils/pureFns.ts";
 import { encryptData, decryptData } from "./utils/crypto.ts";
 
-const dbPath = path.resolve(import.meta.dirname || "", "db.db");
-const db = new DB(dbPath);
+let db: DB;
 
 /**
  * Create the SQLite tables.
+ * @param dbPath Path to the database file
  * @returns
  */
-export function initDb() {
+export function initDb(dbPath: string) {
+  const dbDir = path.dirname(dbPath);
+  try {
+    Deno.mkdirSync(dbDir, { recursive: true });
+  } catch (err) {
+    if (!(err instanceof Deno.errors.AlreadyExists)) {
+      throw err;
+    }
+  }
+
+  db = new DB(dbPath);
+  console.log(`Database initialized at: ${dbPath}`);
   let itemsAlreadyCreated = false;
 
   try {
